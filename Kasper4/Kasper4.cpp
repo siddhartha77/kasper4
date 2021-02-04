@@ -1,6 +1,5 @@
 // Kasper4 - Stuffit 4 Password Recovery
 // Greg Esposito
-// 2014-09-13
 // Designed to be used with MaskProcessor to emit passwords
 // Currently can break find potential passwords of length 8 or lower
 
