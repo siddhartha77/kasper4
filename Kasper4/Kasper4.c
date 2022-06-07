@@ -16,7 +16,7 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <windows.h> // Needed for Sleep()
+#include <windows.h> // For Sleep()
 
 #pragma warning(disable:4996)	// Be quiet about fopen()
 
@@ -24,9 +24,9 @@
 #define MAX_PASS_LEN	64
 
 /* Log constants */
-#define LOGFILE	"crack.log"
-#define WAIT_TIME 2000
-#define WAIT_TRIES 5
+#define LOGFILE			"crack.log"
+#define WAIT_TIME		2000	// milliseconds
+#define WAIT_TRIES		5
 
 /* Macro functions */
 #define CS_SET_UINT32_BE(b, n) b[0] = (n >> 24) & 0xff; b[1] = (n >> 16) & 0xff; b[2] = (n >> 8) & 0xff; b[3] = n & 0xff
@@ -229,7 +229,7 @@ void CharsToHex(unsigned char* s, int len, unsigned char* bytes) {
 	  0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, // 01234567
 	  0x08, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // 89:;<=>?
 	  0x00, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x00, // @ABCDEFG
-	  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // HIJKLMNO
+	  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00  // HIJKLMNO
 	};
 
 	unsigned char idx0, idx1;
@@ -271,7 +271,7 @@ int main(int argc, char* argv[]) {
 	for (int i = 0; i <= MAX_PASS_LEN; ++i) passData[i] = '\0';
 
 	if (argc != 2 || strlen(argv[1]) != 16) {
-		printf("Please enter an 8-byte mKey with leading zeros.\n");
+		printf("Please enter an 8-byte mKey with leading zeros.\n\tUsage: Kasper4 MKEY");
 		return 1;
 	}
 
