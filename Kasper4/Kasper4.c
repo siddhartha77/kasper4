@@ -380,7 +380,7 @@ int main(int argc, char* argv[]) {
 			archiveKey[7] ^= passBlock[7] & 0x7f;
 
 			StuffItDESCrypt(archiveKey, &keySchedule, 1);
-		} while ((((x++ * (passLen >> 3)) << 3) < passLen) && passLen > 8);
+		} while ((((passLen >> (3 + x))) << (3 + x++)) > 0 && passLen > 8);
 
 		memcpy(archiveIV, mKey, 8);
 		StuffItDESSetKey(archiveKey, &keySchedule);
