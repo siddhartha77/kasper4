@@ -276,14 +276,14 @@ int main(int argc, char* argv[]) {
 			passData[passLen - 1] = '\0';
 			--passLen;
 		}
+
 		x = 0;
 
 		do {
 			unsigned char passBlock[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
 
 			offset = x << 3;
-
-			memcpy(passBlock, passData + offset, 8);
+			strncpy(passBlock, passData + offset, 8);
 
 			archiveKey[0] ^= passBlock[0] & 0x7f;
 			archiveKey[1] ^= passBlock[1] & 0x7f;
