@@ -14,3 +14,7 @@ Usage: Kasper4.exe MKEY_HASH
 f615d8ac23be32fe  abcdefghijkl
 191dee4a13759f73  12345678901234567
 ```
+
+## Utilities
+- kasper4-test.bat: Run Kasper4 against test hashes
+- DistributedKasper4.vbs: Distribute a keyspace to multiple instances of Kasper4
