@@ -33,6 +33,7 @@
 #define CS_UINT32_BE(b) (((unsigned int)b[0] << 24) | ((unsigned int)b[1] << 16) | ((unsigned int)b[2] << 8) | (unsigned int)b[3])
 #define NIBBLE(a, n) ((a[(n & 0x0f) >> 1] >> (((n ^ 1) & 1) << 2)) & 0x0f)
 #define REVERSE_BITS(n) ((BitReverseTable256[n & 0xff] << 24) | (BitReverseTable256[(n >> 8) & 0xff] << 16) | (BitReverseTable256[(n >> 16) & 0xff] << 8) | (BitReverseTable256[(n >> 24) & 0xff]))
+#define ENCRYPT(l, r, k) (l ^= DES_SPtrans[0][((r^k[0]) >> 2) & 0x3f]^DES_SPtrans[2][((r^k[0]) >> 10) & 0x3f]^DES_SPtrans[4][((r^k[0]) >> 18) & 0x3f]^DES_SPtrans[6][((r^k[0]) >> 26) & 0x3f]^DES_SPtrans[1][((_rotr(r, 4)^k[1]) >> 2) & 0x3f]^DES_SPtrans[3][((_rotr(r, 4)^k[1]) >> 10) & 0x3f]^DES_SPtrans[5][((_rotr(r, 4)^k[1]) >> 18) & 0x3f]^DES_SPtrans[7][((_rotr(r, 4)^k[1]) >> 26) & 0x3f])
 
 typedef struct StuffItDESKeySchedule {
 	unsigned int subKeys[16][2];
@@ -156,21 +157,6 @@ const unsigned int DES_SPtrans[8][64] = {
 	}
 };
 
-void Encrypt(unsigned int* left, unsigned int right, unsigned int* subKey) {
-	register unsigned int u = right ^ subKey[0];
-	register unsigned int t = _rotr(right, 4) ^ subKey[1];
-
-	*left ^=
-		DES_SPtrans[0][(u >> 2) & 0x3f] ^
-		DES_SPtrans[2][(u >> 10) & 0x3f] ^
-		DES_SPtrans[4][(u >> 18) & 0x3f] ^
-		DES_SPtrans[6][(u >> 26) & 0x3f] ^
-		DES_SPtrans[1][(t >> 2) & 0x3f] ^
-		DES_SPtrans[3][(t >> 10) & 0x3f] ^
-		DES_SPtrans[5][(t >> 18) & 0x3f] ^
-		DES_SPtrans[7][(t >> 26) & 0x3f];
-}
-
 void StuffItDESCrypt(unsigned char data[8], StuffItDESKeySchedule* keySchedule, int enc) {
 	unsigned int left = REVERSE_BITS(CS_UINT32_BE((&data[0])));
 	unsigned int right = REVERSE_BITS(CS_UINT32_BE((&data[4])));
@@ -179,40 +165,40 @@ void StuffItDESCrypt(unsigned char data[8], StuffItDESKeySchedule* keySchedule, 
 	left = _rotr(left, 29);
 
 	if (enc) {
-		Encrypt(&left, right, keySchedule->subKeys[0]);
-		Encrypt(&right, left, keySchedule->subKeys[1]);
-		Encrypt(&left, right, keySchedule->subKeys[2]);
-		Encrypt(&right, left, keySchedule->subKeys[3]);
-		Encrypt(&left, right, keySchedule->subKeys[4]);
-		Encrypt(&right, left, keySchedule->subKeys[5]);
-		Encrypt(&left, right, keySchedule->subKeys[6]);
-		Encrypt(&right, left, keySchedule->subKeys[7]);
-		Encrypt(&left, right, keySchedule->subKeys[8]);
-		Encrypt(&right, left, keySchedule->subKeys[9]);
-		Encrypt(&left, right, keySchedule->subKeys[10]);
-		Encrypt(&right, left, keySchedule->subKeys[11]);
-		Encrypt(&left, right, keySchedule->subKeys[12]);
-		Encrypt(&right, left, keySchedule->subKeys[13]);
-		Encrypt(&left, right, keySchedule->subKeys[14]);
-		Encrypt(&right, left, keySchedule->subKeys[15]);
+		ENCRYPT(left, right, keySchedule->subKeys[0]);
+		ENCRYPT(right, left, keySchedule->subKeys[1]);
+		ENCRYPT(left, right, keySchedule->subKeys[2]);
+		ENCRYPT(right, left, keySchedule->subKeys[3]);
+		ENCRYPT(left, right, keySchedule->subKeys[4]);
+		ENCRYPT(right, left, keySchedule->subKeys[5]);
+		ENCRYPT(left, right, keySchedule->subKeys[6]);
+		ENCRYPT(right, left, keySchedule->subKeys[7]);
+		ENCRYPT(left, right, keySchedule->subKeys[8]);
+		ENCRYPT(right, left, keySchedule->subKeys[9]);
+		ENCRYPT(left, right, keySchedule->subKeys[10]);
+		ENCRYPT(right, left, keySchedule->subKeys[11]);
+		ENCRYPT(left, right, keySchedule->subKeys[12]);
+		ENCRYPT(right, left, keySchedule->subKeys[13]);
+		ENCRYPT(left, right, keySchedule->subKeys[14]);
+		ENCRYPT(right, left, keySchedule->subKeys[15]);
 	}
 	else  {
-		Encrypt(&left, right, keySchedule->subKeys[15]);
-		Encrypt(&right, left, keySchedule->subKeys[14]);
-		Encrypt(&left, right, keySchedule->subKeys[13]);
-		Encrypt(&right, left, keySchedule->subKeys[12]);
-		Encrypt(&left, right, keySchedule->subKeys[11]);
-		Encrypt(&right, left, keySchedule->subKeys[10]);
-		Encrypt(&left, right, keySchedule->subKeys[9]);
-		Encrypt(&right, left, keySchedule->subKeys[8]);
-		Encrypt(&left, right, keySchedule->subKeys[7]);
-		Encrypt(&right, left, keySchedule->subKeys[6]);
-		Encrypt(&left, right, keySchedule->subKeys[5]);
-		Encrypt(&right, left, keySchedule->subKeys[4]);
-		Encrypt(&left, right, keySchedule->subKeys[3]);
-		Encrypt(&right, left, keySchedule->subKeys[2]);
-		Encrypt(&left, right, keySchedule->subKeys[1]);
-		Encrypt(&right, left, keySchedule->subKeys[0]);
+		ENCRYPT(left, right, keySchedule->subKeys[15]);
+		ENCRYPT(right, left, keySchedule->subKeys[14]);
+		ENCRYPT(left, right, keySchedule->subKeys[13]);
+		ENCRYPT(right, left, keySchedule->subKeys[12]);
+		ENCRYPT(left, right, keySchedule->subKeys[11]);
+		ENCRYPT(right, left, keySchedule->subKeys[10]);
+		ENCRYPT(left, right, keySchedule->subKeys[9]);
+		ENCRYPT(right, left, keySchedule->subKeys[8]);
+		ENCRYPT(left, right, keySchedule->subKeys[7]);
+		ENCRYPT(right, left, keySchedule->subKeys[6]);
+		ENCRYPT(left, right, keySchedule->subKeys[5]);
+		ENCRYPT(right, left, keySchedule->subKeys[4]);
+		ENCRYPT(left, right, keySchedule->subKeys[3]);
+		ENCRYPT(right, left, keySchedule->subKeys[2]);
+		ENCRYPT(left, right, keySchedule->subKeys[1]);
+		ENCRYPT(right, left, keySchedule->subKeys[0]);
 	}
 
 	left = _rotr(left, 3);
