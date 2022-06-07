@@ -16,5 +16,5 @@ f615d8ac23be32fe  abcdefghijkl
 ```
 
 ## Utilities
-- kasper4-test.bat: Run Kasper4 against test hashes
-- DistributedKasper4.vbs: Distribute a keyspace to multiple instances of Kasper4
+- **kasper4-test.bat**: Run Kasper4 against test hashes
+- **DistributedKasper4.vbs**: Distribute a keyspace to multiple instances of Kasper4
