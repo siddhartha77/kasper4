@@ -254,6 +254,7 @@ int main(int argc, char* argv[]) {
 	unsigned char mKey[8];
 	unsigned char archiveIV[8];
 	unsigned char passData[MAX_PASS_LEN + 1];
+	int copyBytes;
 
 	for (int i = 0; i <= MAX_PASS_LEN; ++i) passData[i] = '\0';
 
@@ -283,8 +284,16 @@ int main(int argc, char* argv[]) {
 		do {
 			unsigned char passBlock[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
 
-			offset = x << 3;
-			strncpy(passBlock, passData + offset, 8);
+			if (passLen - (x << 3) > 8)
+			{
+				copyBytes = 8;
+			}
+			else
+			{
+				copyBytes = passLen - (x << 3);
+			}
+
+			strncpy(passBlock, passData + (x << 3), copyBytes);
 
 			archiveKey[0] ^= passBlock[0] & 0x7f;
 			archiveKey[1] ^= passBlock[1] & 0x7f;
@@ -296,7 +305,8 @@ int main(int argc, char* argv[]) {
 			archiveKey[7] ^= passBlock[7] & 0x7f;
 
 			StuffItDESCrypt(archiveKey, &keySchedule, 1);
-		} while ((((passLen >> (3 + x))) << (3 + x++)) > 0 && passLen > 8);
+			++x;
+		} while ((((x * (passLen >> 3)) << 3) <= passLen) && passLen >= 8);
 
 		memcpy(archiveIV, mKey, 8);
 		StuffItDESSetKey(archiveKey, &keySchedule);
